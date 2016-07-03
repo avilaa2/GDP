@@ -2,18 +2,43 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<!--<link rel="stylesheet" type="text/css" href="global.css">-->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<script src="js/jquery-3.0.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/global.js"></script>
 	<script src="js/municipios.js"></script>
-	<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqs9CN9AtgWNQUxYNY2vF5cTW0NHjBE70&callback=initialize">
+	<script src="js/distritos.js"></script>
+	<script src="js/secciones.js"></script>
+	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqs9CN9AtgWNQUxYNY2vF5cTW0NHjBE70">
     </script>
 </head>
 <body>
-	<!--<a href = 'php/queryColorMunicipios.php'>Enlace</a>-->
-	<label id = 'test'>test</label>
-	<div id='map' style=width:600px;height:500px;>
-		<!--place the map-->
+	<form class="form-inline">
+  		<div class="form-group">
+			<select name="nivel" class="form-control">
+				<option value="distritos">Distritos</option>
+				<option value="municipios" selected>Municipios</option>
+				<option value="secciones">Secciones</options>
+			</select>
+			<select name="año" class="form-control">
+				<option value="g2012">2012</option>
+				<option value="g2015" selected>2015</option>
+			</select>
+			<button id="actualizar"  class="btn btn-default" type="button">Actualizar</button>
+			<input type="text" class="form-control" id="busqueda" placeholder="Buscar en este nivel">
+			<button id="buscar" class="btn btn-default" type="button">Buscar</button>
+		</div>
+	</form>
+	<p id = 'test' class="text-center">SELECCION</p>
+	<div id='map'>
 	</div>
+	<div id='result' class = 'col-md-4'></div>
+	<style>
+      html, body {
+        height: 100%;
+      }
+      #map {
+        height: 70%;
+      }
 </body>
 </html>

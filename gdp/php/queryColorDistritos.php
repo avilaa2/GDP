@@ -1,7 +1,6 @@
 <?php
 $q = $_POST['año'];
-if($q == null)
-	$q = 'g2015';
+//$q = 'g2012';
 
 $con = mysqli_connect('localhost','root','','gdp');
 if (!$con) {
@@ -9,7 +8,14 @@ if (!$con) {
 }
 
 mysqli_select_db($con,"gdp");
-$sql="SELECT municipio, ".$q." FROM gdp.municipios";
+$sql=
+"SELECT distrito, $q, max(total) AS votos FROM
+	(SELECT distrito, $q, count(*) as total FROM gdp.distritos as D
+		INNER JOIN municipios as M ON D.municipio = M.municipio
+		GROUP BY D.distrito, $q
+    	order by total desc) as t
+GROUP BY distrito;";
+
 $result = mysqli_query($con,$sql);
 
 $array = mysqli_fetch_all($result);

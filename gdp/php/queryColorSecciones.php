@@ -1,7 +1,14 @@
 <?php
-$q = $_POST['año'];
-if($q == null)
-	$q = 'g2015';
+switch($_POST['año']){
+	case "g2012":
+		$q = "seccionesgdl2012";
+		break;
+	case "g2015":
+		$q = "seccionesgdl2015";
+		break;
+	default:
+		$q = "seccionesgdl2015";
+}
 
 $con = mysqli_connect('localhost','root','','gdp');
 if (!$con) {
@@ -9,7 +16,7 @@ if (!$con) {
 }
 
 mysqli_select_db($con,"gdp");
-$sql="SELECT municipio, ".$q." FROM gdp.municipios";
+$sql="SELECT seccion, ganador FROM $q";
 $result = mysqli_query($con,$sql);
 
 $array = mysqli_fetch_all($result);

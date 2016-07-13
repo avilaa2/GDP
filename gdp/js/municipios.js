@@ -7,11 +7,12 @@ function cargarMunicipios(año)
 
 	map.data.loadGeoJson('json/MUNICIPIOS.json',{idPropertyName:'NOMBRE'});
 
+	colorearMunicipios(año);
+
 	map.data.addListener('mouseover', function(event) {
-		var n = event.feature.getId();
-		$("#test").text(n);
+		$("#test").text(event.feature.getId());
     	map.data.revertStyle();
-    	map.data.overrideStyle(event.feature, {strokeWeight: 1.5, fillOpacity: 0.5});
+    	map.data.overrideStyle(event.feature, {strokeWeight: 1.5, fillOpacity: 0.9});
   	});
 
 	map.data.addListener('mouseout', function(event) {
@@ -20,25 +21,29 @@ function cargarMunicipios(año)
 
 	map.data.addListener('click', function(event) {
 		map.panTo(event.latLng);
-		if(año == 'g2012')
-			$("#result").text("No hay detalles de municipios 2012");
-		else{
-			var municipio = normalizar(event.feature.getId());
-			$.ajax({
-				url: 'php/queryResultadosMunicipios.php',
-				type: 'post',
-				data: {año, municipio},
-				dataType: 'html',
-				success: function (result) {
-					console.log(result);
-					$("#result").html(result);
-				}
-			});
+		var municipio = normalizar(event.feature.getId());
+		seleccion['id'] = municipio;
+		obtenerResultadosMunicipios(municipio, año);
+		obtenerComentarios(municipio, año, seleccion['nivel']);
+	});
+}
+
+function obtenerResultadosMunicipios(municipio, año){
+	$.ajax({
+		url: 'php/resultadosMunicipios.php',
+		type: 'post',
+		data: {municipio, año},
+		dataType: 'json',
+		success: function (result) {
+			graficar(result);
+			llenarTabla(result);
 		}
 	});
+}
 
+function colorearMunicipios(año){
 	$.ajax({
-		url: 'php/queryColorMunicipios.php',
+		url: 'php/colorMunicipios.php',
 		type: 'post',
 		data: {año},
 		dataType: 'json',
@@ -54,6 +59,7 @@ function cargarMunicipios(año)
 		    	}
 		    	return {
 		      		fillColor: color,
+		      		fillOpacity: 0.6,
 		      		strokeWeight: 0.5
 		    	};
 			});

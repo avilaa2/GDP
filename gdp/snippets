@@ -1,0 +1,92 @@
+snippets
+
+//console.log(result);
+//$("#result").html(result);
+//$("#result").html(JSON.stringify(result));
+
+/*TABLAS COMO RETORNO DE PHP 
+    //TABLA HORIZONTAL
+    echo("<table>");
+    $first_row = true;
+    while ($row = mysqli_fetch_assoc($result)) {
+        if ($first_row) {
+            $first_row = false;
+            echo '<tr>';
+            foreach($row as $key => $field) {
+                echo '<th>' . htmlspecialchars($key) . '</th>';
+            }
+            echo '</tr>';
+        }
+        echo '<tr>';
+        foreach($row as $key => $field) {
+            echo '<td>' . htmlspecialchars($field) . '</td>';
+        }
+        echo '</tr>';
+    }
+    echo("</table>");
+
+    //TABLA VERTICAL
+    echo("<table class='table table-condensed'>");
+    while ($row = mysqli_fetch_assoc($result)) {
+        foreach($row as $key => $field) {
+        	echo '<tr>';
+            echo '<td>' . htmlspecialchars($key) . '</td>';
+            echo '<td>' . htmlspecialchars($field) . '</td>';
+            echo '</tr>';
+        }
+    }
+    echo("</table>");
+*/ 
+
+ /*
+
+    //TABLA
+    echo("<table class='table table-condensed'>");
+    while ($row = mysqli_fetch_assoc($result[0])) {
+        foreach($row as $key => $field) {
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($key) . '</td>';
+            echo '<td>' . htmlspecialchars($field) . '</td>';
+            echo '</tr>';
+        }
+    }
+    echo("</table>");
+
+
+    while ($row =  mysqli_fetch_assoc($result[1])) {
+        echo("<table class='table table-condensed'>");
+        foreach($row as $key => $field) {
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($key) . '</td>';
+            echo '<td>' . htmlspecialchars($field) . '</td>';
+            echo '</tr>';
+        }
+        echo("</table>");
+    }
+*/
+
+//RETORNO DE UN OBJETO CON DOS RESULTADOS DE CONSULTAS
+ $sql="SELECT * FROM $tabla WHERE municipio = '$municipio'";
+    $result[0] = mysqli_query($con,$sql);
+
+    $sql="SELECT * FROM observaciones WHERE feature_id = '$municipio' and year = '$año'";
+    $result[1] = mysqli_query($con,$sql);
+
+    //JSON
+    if($result[0] == false || $result[0]->num_rows == 0)
+        $resultados = (object)[];
+    else
+        $resultados = mysqli_fetch_assoc($result[0]);
+    
+    $observaciones = array();
+    while($row = mysqli_fetch_assoc($result[1])){
+        $observaciones[] = $row;
+    }
+
+    $array = (object)[
+        'resultados' => $resultados,
+        'observaciones' => $observaciones
+    ];
+
+    $js_array = json_encode($array);
+    echo $js_array;

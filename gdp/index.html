@@ -3,42 +3,139 @@
 <head>
 	<meta charset="utf-8">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<script src="js/jquery-3.0.0.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
+	<link href='css/global.css' rel='stylesheet'>
+	<link href="css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<!--<script src="js/lib/jquery-3.0.0.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="js/lib/bootstrap.min.js"></script>
+	<script src="js/lib/highcharts.js"></script>
 	<script src="js/global.js"></script>
 	<script src="js/municipios.js"></script>
 	<script src="js/distritos.js"></script>
 	<script src="js/secciones.js"></script>
 	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqs9CN9AtgWNQUxYNY2vF5cTW0NHjBE70">
     </script>
+	<!--<script src="https://code.highcharts.com/modules/exporting.js"></script>-->
 </head>
 <body>
-	<form class="form-inline">
-  		<div class="form-group">
-			<select name="nivel" class="form-control">
-				<option value="distritos">Distritos</option>
-				<option value="municipios" selected>Municipios</option>
-				<option value="secciones">Secciones</options>
-			</select>
-			<select name="año" class="form-control">
-				<option value="g2012">2012</option>
-				<option value="g2015" selected>2015</option>
-			</select>
-			<button id="actualizar"  class="btn btn-default" type="button">Actualizar</button>
-			<input type="text" class="form-control" id="busqueda" placeholder="Buscar en este nivel">
-			<button id="buscar" class="btn btn-default" type="button">Buscar</button>
+    <!-- Modal -->
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Notas</h4>
+          </div>
+          <div class="modal-body">
+            ¿Realmente deseas eliminar esta nota?
+          </div>
+          <div class="modal-footer">
+            <button id = 'btnCancelar' type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            <button id = 'btnAceptar' type="button" class="btn btn-primary" data-dismiss="modal">Si</button>
+          </div>
+        </div>
+      </div>
+    </div><!--modal-->
+	<nav id = 'navbar' class="navbar navbar-dark navbar-fixed-top ">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Prep Movimineto Ciudadano</a>
+            </div>
+        </div>
+        <!-- container navbar -->
+    </nav>
+    <div class = 'container'>
+    	<div class = 'row'>
+    		<div class = 'panel panel-default'>
+    			<div class = 'panel-body'>
+    				<form class="form-inline">
+				  		<div class="form-group" >
+							<select name="nivel" class="form-control">
+								<option value="distritos" >Distritos</option>
+								<option value="municipios" selected>Municipios</option>
+								<option value="secciones_gdl">Secciones Guadalajara</options>
+                                <option value="secciones">Secciones por Distrito</options>
+							</select>
+                            <select name="distrito" class="form-control">
+                                <option value="01" selected >Distrito 01</option>
+                                <option value="02">Distrito 02</option>
+                                <option value="03">Distrito 03</options>
+                                <option value="04">Distrito 04</option>
+                                <option value="05">Distrito 05</option>
+                                <option value="06">Distrito 06</options>
+                                <option value="07">Distrito 07</option>           
+                                <option value="10">Distrito 10</option>
+                                <option value="16">Distrito 16</option>
+                                <option value="17">Distrito 17</options>
+                                <option value="18">Distrito 18</option>
+                                <option value="19">Distrito 19</option>
+                                <option value="20">Distrito 20</options>
+                            </select>
+							<select name="año" class="form-control">
+								<option value="2012">2012</option>
+								<option value="2015" selected>2015</option>
+							</select>
+							<button id="actualizar"  class="btn btn-default" type="button">Actualizar</button>
+							<input type="text" class="form-control" id="busqueda" placeholder="Buscar en este nivel">
+							<button id="buscar" class="btn btn-default" type="button">Buscar</button>
+						</div>
+					</form>
+    			</div>
+    		</div>
+    	</div><!--row opciones-->
+    	<div class = 'row'>
+    		<h5><span  id = 'test' class="label label-default">SELECCION ACTUAL</span></h5>		
+    	</div>
+    	<div class = 'row'>
+    		<div id = 'map' class = 'col-md-8'></div>
+    		<div class = 'col-md-4'>
+    			<div class = 'panel panel-default'>
+    				<div class = 'panel-heading'>
+    					<h3 class="panel-title"><i class="fa fa-bar-chart" aria-hidden="true"></i> Votos por partido</h3>
+    				</div>
+    				<div id = 'chart_container' class = 'panel-body'>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    	<div  id = 'detalles' class = 'row'>
+    		<div class = 'col-md-4'>
+    			<div class = 'panel panel-default'>
+    				<div class="panel-heading">
+						<h3 class="panel-title"><i class="fa fa-info-circle" aria-hidden="true"></i> Detalles</h3>
+                    </div>
+    				<div id = 'tabla_container' class = 'panel-body'>
+						<table id = 'tabla' class='table table-hover'><tr></tr></table>
+					</div>
+				</div>
+			</div>
+			<div class = 'col-md-8'>
+				<div id = 'observaciones' class="panel panel-default">
+        			<div class="panel-heading">
+                		<h3 class="panel-title"><i class="fa fa-comments fa-fw"></i> Notas</h3>
+            		</div>
+            		<div id = 'notas_container' class="panel-body">
+                		<ul id = 'notas' class="chat"></ul>
+            		</div><!-- panel-body -->
+	            	<div class="panel-footer">
+		            	<input type="text" class="form-control" id="asunto" placeholder="Asunto">
+		            	<textarea id = "comentario" class="form-control" rows="3" placeholder="Comentarios (200 caracteres max)"></textarea>
+						<button id="insertarComentarios" class="btn btn-warning btn-sm">Enviar</button>
+            		</div><!-- panel-footer -->
+        		</div><!--observaciones-->
+				<!--<textarea id='result' class = 'form-control' hidden rows="5"></textarea>-->
+			</div>
 		</div>
-	</form>
-	<p id = 'test' class="text-center">SELECCION</p>
-	<div id='map'>
-	</div>
-	<div id='result' class = 'col-md-4'></div>
-	<style>
-      html, body {
-        height: 100%;
-      }
-      #map {
-        height: 70%;
-      }
+		<footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Prep Movimiento Ciudadano 2016</p>
+                </div>
+            </div>
+        </footer>
+	</div><!--container-->   
 </body>
 </html>
+
+
+			

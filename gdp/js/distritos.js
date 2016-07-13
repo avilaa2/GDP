@@ -7,11 +7,12 @@ function cargarDistritos(año)
 
 	map.data.loadGeoJson('json/DISTRITOS.json',{idPropertyName:'DISTRITO'});
 
+	colorearDistritos(año);
+
 	map.data.addListener('mouseover', function(event) {
-		var n = event.feature.getId();
-		$("#test").text(n);
+		$("#test").text(event.feature.getId());
     	map.data.revertStyle();
-    	map.data.overrideStyle(event.feature, {strokeWeight: 1.5, fillOpacity: 0.5});
+    	map.data.overrideStyle(event.feature, {strokeWeight: 1.5, fillOpacity: 0.9});
   	});
 
 	map.data.addListener('mouseout', function(event) {
@@ -20,11 +21,16 @@ function cargarDistritos(año)
 
 	map.data.addListener('click', function(event) {
 		map.panTo(event.latLng);
-		$("#result").text("No hay detalles de distritos");
+		var distrito = parseInt(event.feature.getId().substring(9,11));
+		seleccion['id'] = distrito;
+		obtenerResultadosDistritos(distrito, año);
+		obtenerComentarios(distrito, año, seleccion['nivel']);
 	});
+}
 
+function colorearDistritos(año){
 	$.ajax({
-		url: 'php/queryColorDistritos.php',
+		url: 'php/colorDistritos.php',
 		type: 'post',
 		data: {año},
 		dataType: 'json',
@@ -40,9 +46,23 @@ function cargarDistritos(año)
 		    	}
 		    	return {
 		      		fillColor: color,
+		      		fillOpacity: 0.6,
 		      		strokeWeight: 0.5
 		    	};
 			});
+		}
+	});
+}
+
+function obtenerResultadosDistritos(distrito, año){
+	$.ajax({
+		url: 'php/resultadosDistritos.php',
+		type: 'post',
+		data: {distrito, año},
+		dataType: 'text',
+		success: function (result) {
+			graficar(result);
+			llenarTabla(result);
 		}
 	});
 }

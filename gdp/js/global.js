@@ -20,7 +20,6 @@ $(document).ready(function(){
         var dis = $("[name=distrito");
         $(this).val() == 'secciones'? dis.show() : dis.hide();
     });
-    .parent().hide();
     $("[name=distrito").hide();
 });
 
